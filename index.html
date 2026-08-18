@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Developer Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- 배경 앰비언트 오로라 광원 -->
+  <div class="ambient-glow glow-top-left"></div>
+  <div class="ambient-glow glow-middle-right"></div>
+  <div class="ambient-glow glow-bottom-left"></div>
+
+  <!-- 로딩 오버레이 -->
+  <div id="globalLoader" class="global-loader">
+    <div class="loader-content">
+      <div class="loader-ring">
+        <img src="https://blog.kakaocdn.net/dna/bzm92S/btsFQxDRCB6/AAAAAAAAAAAAAAAAAAAAAGFon-u2zHU8KJwIuw-qS_9zaMj1CHKDlB-AK3ahkbkX/img.gif?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1788188399&allow_ip=&allow_referer=&signature=put6pL4PDxFGW%2BSpc%2BCXvbP%2BwSI%3D" alt="Loading" class="loader-gif" />
+      </div>
+      <p id="loaderText" class="loader-text">포트폴리오 데이터를 불러오는 중...</p>
+    </div>
+  </div>
+
+  <!-- 상단 네비게이션 -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="#profile" class="nav-logo">
+        <span class="logo-dot"></span>
+        <span class="logo-text">DEV.PORTFOLIO</span>
+      </a>
+      
+      <nav class="nav-menu" id="navMenu">
+        <a href="#profile" class="nav-link active">About Me</a>
+        <a href="#skills" class="nav-link">Skills & Certs</a>
+        
+        <!-- 회사 및 프로젝트 계층 드롭다운 -->
+        <div class="nav-dropdown" id="navDropdown">
+          <button class="nav-dropdown-btn" id="navDropdownBtn" type="button">
+            <i class="fa-solid fa-layer-group"></i>
+            <span>Career & Projects</span>
+            <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+          </button>
+          <div class="dropdown-menu" id="dropdownMenu">
+            <div class="dropdown-loading"><i class="fa-solid fa-spinner fa-spin"></i> 로딩 중...</div>
+          </div>
+        </div>
+      </nav>
+
+      <button class="hamburger" id="hamburger" aria-label="메뉴 열기">
+        <i class="fa-solid fa-bars-staggered"></i>
+      </button>
+    </div>
+  </header>
+
+  <main class="main-container">
+    
+    <!-- 섹션 1: About Me (자기소개 및 소제목 반영) -->
+    <section id="profile" class="section">
+      <div class="section-badge"><i class="fa-solid fa-sparkles"></i> ABOUT ME</div>
+      <h2 class="section-title">자기소개</h2>
+      <p class="section-desc">저에 대해 소개해 드립니다.</p>
+      <div class="profile-card" id="profileContent"></div>
+    </section>
+
+    <!-- 섹션 2: Skills & Certificates -->
+    <section id="skills" class="section">
+      <div class="section-badge"><i class="fa-solid fa-code-branch"></i> TECH & CREDENTIALS</div>
+      <h2 class="section-title">기술 스택 및 자격증</h2>
+      <p class="section-desc">실무에서 능숙하게 활용하는 프로그래밍 언어, 프레임워크, 도구 및 취득 자격증입니다.</p>
+      
+      <div class="skills-wrapper" id="skillsContent"></div>
+    </section>
+
+    <!-- 섹션 3: Career & Projects -->
+    <section id="experience" class="section">
+      <div class="section-badge"><i class="fa-solid fa-cube"></i> CAREER & PROJECTS</div>
+      <h2 class="section-title">회사 이력 및 수행 프로젝트</h2>
+      <p class="section-desc">재직한 기업 정보와 실무에서 구축한 프로덕트 및 프로젝트 목록입니다.</p>
+      
+      <div class="company-stack" id="experienceContent"></div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <p class="footer-title">Crafting Scalable Web Experiences</p>
+      <p class="footer-copy">© 2026 Web Developer Portfolio. Powered by Google Sheets Database.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
