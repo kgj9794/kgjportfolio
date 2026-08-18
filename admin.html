@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio Admin Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+
+  <!-- 로딩 오버레이 -->
+  <div id="globalLoader" class="global-loader">
+    <div class="loader-content">
+      <img src="https://blog.kakaocdn.net/dna/bzm92S/btsFQxDRCB6/AAAAAAAAAAAAAAAAAAAAAGFon-u2zHU8KJwIuw-qS_9zaMj1CHKDlB-AK3ahkbkX/img.gif?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1788188399&allow_ip=&allow_referer=&signature=put6pL4PDxFGW%2BSpc%2BCXvbP%2BwSI%3D" alt="Loading" class="loader-gif" />
+      <p id="loaderText" class="loader-text">처리 중입니다...</p>
+    </div>
+  </div>
+
+  <!-- 로그인 모달 -->
+  <div id="loginOverlay" class="login-overlay">
+    <div class="login-card">
+      <i class="fa-solid fa-shield-halved login-icon"></i>
+      <h2>관리자 로그인</h2>
+      <p>관리자 비밀번호를 입력하세요.</p>
+      <form id="loginForm">
+        <input type="password" id="adminPasswordInput" placeholder="비밀번호" required autocomplete="current-password" />
+        <button type="submit" class="submit-btn" id="loginBtn">로그인</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 대시보드 화면 -->
+  <div class="admin-wrapper" id="adminDashboard" style="display: none;">
+    <header class="admin-header">
+      <div class="admin-logo"><i class="fa-solid fa-sliders"></i> DEV.ADMIN</div>
+      <div class="header-actions">
+        <button id="logoutBtn" class="btn-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> 로그아웃</button>
+        <a href="index.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> 포트폴리오 보기</a>
+      </div>
+    </header>
+
+    <div class="admin-content">
+      <nav class="admin-tabs">
+        <button class="tab-btn active" data-tab="profile-tab"><i class="fa-solid fa-user-pen"></i> 프로필 수정</button>
+        <button class="tab-btn" data-tab="skill-tab"><i class="fa-solid fa-award"></i> 스킬 & 자격증 추가</button>
+        <button class="tab-btn" data-tab="exp-tab"><i class="fa-solid fa-building"></i> 새 회사 추가</button>
+        <button class="tab-btn" data-tab="proj-tab"><i class="fa-solid fa-folder-plus"></i> 새 프로젝트 추가</button>
+      </nav>
+
+      <div id="toast" class="toast"></div>
+
+      <!-- 탭 1: 프로필 수정 -->
+      <section id="profile-tab" class="tab-panel active">
+        <form id="profileForm" class="admin-form">
+          <div class="form-grid">
+            <div class="form-group"><label>이름</label><input type="text" name="name" required /></div>
+            <div class="form-group"><label>성별</label><input type="text" name="gender" required /></div>
+            <div class="form-group"><label>혈액형</label><input type="text" name="blood_type" required /></div>
+            <div class="form-group"><label>최종학력</label><input type="text" name="education" required /></div>
+            <div class="form-group"><label>거주지</label><input type="text" name="residence" required /></div>
+            <div class="form-group"><label>취미</label><input type="text" name="hobby" required /></div>
+          </div>
+          <div class="form-group"><label>프로필 사진 URL</label><input type="url" name="profile_image" required /></div>
+          <div class="form-group"><label>간단 소개 (Bio)</label><textarea name="bio" rows="3" required></textarea></div>
+          <button type="submit" class="submit-btn"><i class="fa-solid fa-floppy-disk"></i> 프로필 저장</button>
+        </form>
+      </section>
+
+      <!-- 탭 2: 스킬 및 자격증 등록 -->
+      <section id="skill-tab" class="tab-panel">
+        <form id="skillForm" class="admin-form">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>카테고리 구분</label>
+              <select name="category" required>
+                <option value="Language">Language (프로그래밍 언어)</option>
+                <option value="Framework">Framework (프레임워크/라이브러리)</option>
+                <option value="DevOps">DevOps (클라우드/인프라/툴)</option>
+                <option value="Certificate">Certificate (자격증/수상)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>스킬명 / 자격증명</label>
+              <input type="text" name="name" placeholder="예: TypeScript, 정보처리기사" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>아이콘 (FontAwesome 클래스명 또는 이미지 URL)</label>
+            <input type="text" name="icon" placeholder="예: fa-brands fa-js, fa-solid fa-award 또는 https://..." required />
+          </div>
+
+          <div class="form-group">
+            <label>상세 설명 / 숙련도 / 취득 정보</label>
+            <textarea name="description" rows="3" placeholder="예: ES6+ 능숙, 2024년 한국산업인력공단 취득" required></textarea>
+          </div>
+
+          <button type="submit" class="submit-btn"><i class="fa-solid fa-plus"></i> 스킬 / 자격증 등록</button>
+        </form>
+      </section>
+
+      <!-- 탭 3: 회사 추가 (회사 로고 URL 필드 포함) -->
+      <section id="exp-tab" class="tab-panel">
+        <form id="experienceForm" class="admin-form">
+          <div class="form-grid">
+            <div class="form-group"><label>회사명</label><input type="text" name="company_name" placeholder="테크노바" required /></div>
+            <div class="form-group"><label>재직 기간</label><input type="text" name="period" placeholder="2023.03 ~ 재직중" required /></div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group"><label>담당 직무</label><input type="text" name="role" placeholder="프론트엔드 리드 개발자" required /></div>
+            <div class="form-group"><label>회사 로고 이미지 URL (선택)</label><input type="url" name="logo_url" placeholder="https://example.com/logo.png" /></div>
+          </div>
+
+          <div class="form-group"><label>회사 배경/대표 사진 URL</label><input type="url" name="image_url" placeholder="https://example.com/company.jpg" required /></div>
+          <div class="form-group"><label>회사/업무 설명</label><textarea name="description" rows="3" required></textarea></div>
+          <button type="submit" class="submit-btn"><i class="fa-solid fa-plus"></i> 회사 등록하기</button>
+        </form>
+      </section>
+
+      <!-- 탭 4: 프로젝트 추가 -->
+      <section id="proj-tab" class="tab-panel">
+        <form id="projectForm" class="admin-form">
+          <div class="form-group">
+            <label><i class="fa-solid fa-building"></i> 소속 회사 선택</label>
+            <select name="company_id" id="companySelect" required>
+              <option value="">소속 회사를 선택하세요</option>
+            </select>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group"><label>프로젝트명</label><input type="text" name="project_name" required /></div>
+            <div class="form-group"><label>프로젝트 기간</label><input type="text" name="period" placeholder="2024.01 ~ 2024.05" required /></div>
+          </div>
+          <div class="form-group"><label>대표 썸네일 이미지 URL</label><input type="url" name="image_url" required /></div>
+          <div class="form-group"><label>참고 자료/배포 링크</label><input type="url" name="ref_link" required /></div>
+          <div class="form-group"><label>프로젝트 상세 설명</label><textarea name="description" rows="4" required></textarea></div>
+          <button type="submit" class="submit-btn"><i class="fa-solid fa-plus"></i> 프로젝트 등록하기</button>
+        </form>
+      </section>
+    </div>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
