@@ -47,6 +47,7 @@
       <nav class="admin-tabs">
         <button class="tab-btn active" data-tab="profile-tab"><i class="fa-solid fa-user-pen"></i> 프로필 수정</button>
         <button class="tab-btn" data-tab="skill-tab"><i class="fa-solid fa-award"></i> 스킬 & 자격증 추가</button>
+        <button class="tab-btn" data-tab="train-tab"><i class="fa-solid fa-graduation-cap"></i> 이수 교육 추가</button>
         <button class="tab-btn" data-tab="exp-tab"><i class="fa-solid fa-building"></i> 새 회사 추가</button>
         <button class="tab-btn" data-tab="proj-tab"><i class="fa-solid fa-folder-plus"></i> 새 프로젝트 추가</button>
       </nav>
@@ -103,7 +104,46 @@
         </form>
       </section>
 
-      <!-- 탭 3: 회사 추가 (회사 로고 URL 필드 포함) -->
+      <!-- 탭 3: 이수 교육 등록 -->
+      <section id="train-tab" class="tab-panel">
+        <form id="trainingForm" class="admin-form">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>교육 과정명</label>
+              <input type="text" name="title" placeholder="예: 클라우드 네이티브 풀스택 개발자 과정" required />
+            </div>
+            <div class="form-group">
+              <label>교육 기관 / 주관처</label>
+              <input type="text" name="institution" placeholder="예: 멀티캠퍼스, 패스트캠퍼스" required />
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label>이수 기간 / 이수 시간</label>
+              <input type="text" name="period" placeholder="예: 2024.03 ~ 2024.09 (총 840시간)" required />
+            </div>
+            <div class="form-group">
+              <label>수료 구분 / 상태 뱃지</label>
+              <input type="text" name="badge_text" placeholder="예: 수료, 우수 수료생" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>수료증 / 이수 자료 링크 (PDF, Google Drive, 증빙 URL)</label>
+            <input type="url" name="file_url" placeholder="https://example.com/certificate.pdf" />
+          </div>
+
+          <div class="form-group">
+            <label>상세 교육 내용 및 성과</label>
+            <textarea name="description" rows="4" placeholder="습득한 주요 기술 스택, 진행 프로젝트 및 교육 내용을 요약해 작성하세요." required></textarea>
+          </div>
+
+          <button type="submit" class="submit-btn"><i class="fa-solid fa-plus"></i> 이수 교육 등록</button>
+        </form>
+      </section>
+
+      <!-- 탭 4: 회사 추가 -->
       <section id="exp-tab" class="tab-panel">
         <form id="experienceForm" class="admin-form">
           <div class="form-grid">
@@ -122,7 +162,7 @@
         </form>
       </section>
 
-      <!-- 탭 4: 프로젝트 추가 -->
+      <!-- 탭 5: 프로젝트 추가 -->
       <section id="proj-tab" class="tab-panel">
         <form id="projectForm" class="admin-form">
           <div class="form-group">
