@@ -136,7 +136,44 @@ function renderSkills(skills) {
   }).join('');
 }
 
-// 3. 상단 메뉴 드롭다운 렌더링 (로고 아이콘 지원)
+// 3. 이수 교육 자료 렌더링
+function renderTrainings(trainings) {
+  const container = document.getElementById("trainingContent");
+  if (!container) return;
+
+  if (!trainings || trainings.length === 0) {
+    container.innerHTML = `<p style="color: var(--text-light); text-align: center; grid-column: 1 / -1; padding: 30px;">등록된 이수 교육 내역이 없습니다.</p>`;
+    return;
+  }
+
+  container.innerHTML = trainings.map(t => {
+    const title = t.title || '교육 과정명 미입력';
+    const inst = t.institution || '교육 기관 미입력';
+    const period = t.period || '-';
+    const badge = t.badge_text || '수료';
+    const desc = t.description || '';
+    const fileUrl = t.file_url || '';
+
+    return `
+      <div class="training-card">
+        <div class="training-top-row">
+          <span class="training-inst-badge"><i class="fa-solid fa-building-columns"></i> ${inst}</span>
+          ${badge ? `<span class="training-status-tag">${badge}</span>` : ''}
+        </div>
+        <h3 class="training-title">${title}</h3>
+        <div class="training-period"><i class="fa-regular fa-calendar-check"></i> ${period}</div>
+        <p class="training-desc">${desc}</p>
+        ${fileUrl ? `
+          <a href="${fileUrl}" target="_blank" rel="noopener noreferrer" class="training-btn">
+            <i class="fa-solid fa-file-arrow-down"></i> 수료증 / 이수 자료 확인
+          </a>
+        ` : ''}
+      </div>
+    `;
+  }).join("");
+}
+
+// 4. 상단 메뉴 드롭다운 렌더링
 function renderNavDropdown(experiences) {
   const dropdownMenu = document.getElementById("dropdownMenu");
   if (!dropdownMenu) return;
@@ -186,7 +223,7 @@ function renderNavDropdown(experiences) {
   });
 }
 
-// 4. 회사 및 프로젝트 렌더링 (회사 로고 표시 추가)
+// 5. 회사 및 프로젝트 렌더링
 function renderExperiencesWithProjects(experiences) {
   const container = document.getElementById("experienceContent");
   if (!container) return;
@@ -271,7 +308,7 @@ function renderExperiencesWithProjects(experiences) {
   }).join("");
 }
 
-// 5. Fetch API
+// 6. Fetch API
 async function fetchPortfolioData() {
   showLoading("포트폴리오 데이터를 불러오는 중...");
   try {
@@ -281,6 +318,7 @@ async function fetchPortfolioData() {
 
     renderProfile(data.profile);
     renderSkills(data.skills);
+    renderTrainings(data.trainings);
     renderExperiencesWithProjects(data.experiences);
     renderNavDropdown(data.experiences);
   } catch (err) {
@@ -290,7 +328,7 @@ async function fetchPortfolioData() {
   }
 }
 
-// 6. 이벤트 리스너
+// 7. 이벤트 리스너
 document.addEventListener("DOMContentLoaded", () => {
   fetchPortfolioData();
 
