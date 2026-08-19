@@ -113,29 +113,119 @@ body { background-color: var(--bg-color); color: var(--text-main); line-height: 
 .skill-card.cert-card .skill-tag { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
 .skill-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
 
-/* Company Stack & Logo */
+/* --- Training / Education Section Styling --- */
+.training-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+}
+
+.training-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(24px);
+  border: 1px solid var(--card-border);
+  border-radius: 22px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  transition: var(--transition);
+}
+
+.training-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(6, 182, 212, 0.45);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45), 0 0 20px rgba(6, 182, 212, 0.2);
+}
+
+.training-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.training-inst-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  background: rgba(6, 182, 212, 0.1);
+  border: 1px solid rgba(6, 182, 212, 0.25);
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.training-status-tag {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 4px 10px;
+  border-radius: 100px;
+}
+
+.training-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.training-period {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.training-desc {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  flex: 1;
+}
+
+.training-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--card-border);
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.86rem;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: var(--transition);
+}
+
+.training-btn:hover {
+  background: var(--accent-gradient);
+  border-color: transparent;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
+}
+
+/* Company Stack */
 .company-stack { display: flex; flex-direction: column; gap: 52px; }
 .company-block { background: var(--card-bg); backdrop-filter: blur(24px); border: 1px solid var(--card-border); border-radius: 28px; padding: 40px; box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35); scroll-margin-top: 95px; }
 .company-header-card { display: grid; grid-template-columns: 160px 1fr; gap: 32px; padding-bottom: 32px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
 .comp-img-wrap { width: 100%; height: 160px; border-radius: 18px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.12); }
 .comp-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
 .comp-info { display: flex; flex-direction: column; justify-content: center; }
-
 .comp-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 12px; }
 .comp-title-left { display: flex; align-items: center; gap: 12px; }
-
-/* Company Logo Style */
-.comp-logo-img {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  object-fit: contain;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 4px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
+.comp-logo-img { width: 38px; height: 38px; border-radius: 10px; object-fit: contain; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12); padding: 4px; }
 .comp-name { font-family: var(--font-display); font-size: 1.8rem; font-weight: 800; color: #fff; }
 .comp-period { font-size: 0.85rem; font-weight: 600; padding: 6px 14px; background: rgba(255, 255, 255, 0.06); border-radius: 100px; color: var(--text-muted); }
 .comp-role { display: inline-flex; align-items: center; gap: 8px; color: #38bdf8; font-size: 1.05rem; font-weight: 700; margin-bottom: 12px; }
@@ -175,4 +265,5 @@ body { background-color: var(--bg-color); color: var(--text-main); line-height: 
   .dropdown-menu { position: static; width: 100%; margin-top: 10px; }
   .info-grid { grid-template-columns: 1fr; }
   .skills-grid { grid-template-columns: 1fr; }
+  .training-grid { grid-template-columns: 1fr; }
 }
