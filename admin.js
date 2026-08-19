@@ -187,24 +187,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
   logoutBtn.addEventListener("click", lockDashboard);
 
+  // 1. 프로필 수정
   document.getElementById("profileForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const payload = Object.fromEntries(new FormData(e.target).entries());
     submitData("profile", payload, e.target, e.target.querySelector(".submit-btn"));
   });
 
+  // 2. 스킬 등록
   document.getElementById("skillForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const payload = Object.fromEntries(new FormData(e.target).entries());
     submitData("skills", payload, e.target, e.target.querySelector(".submit-btn"));
   });
 
+  // 3. 이수 교육 등록
+  document.getElementById("trainingForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const payload = Object.fromEntries(new FormData(e.target).entries());
+    submitData("trainings", payload, e.target, e.target.querySelector(".submit-btn"));
+  });
+
+  // 4. 회사 등록
   document.getElementById("experienceForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const payload = Object.fromEntries(new FormData(e.target).entries());
     submitData("experience", payload, e.target, e.target.querySelector(".submit-btn"));
   });
 
+  // 5. 프로젝트 등록
   document.getElementById("projectForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const payload = Object.fromEntries(new FormData(e.target).entries());
