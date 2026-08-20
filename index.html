@@ -18,7 +18,7 @@
   <div class="ambient-glow glow-middle-right"></div>
   <div class="ambient-glow glow-bottom-left"></div>
 
-  <!-- 전체 화면 로딩 오버레이 (스크롤/드래그/터치 차단) -->
+  <!-- 전체 화면 로딩 오버레이 -->
   <div id="globalLoader" class="global-loader show" oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;">
     <div class="loader-content">
       <img src="https://blog.kakaocdn.net/dna/bzm92S/btsFQxDRCB6/AAAAAAAAAAAAAAAAAAAAAGFon-u2zHU8KJwIuw-qS_9zaMj1CHKDlB-AK3ahkbkX/img.gif?credential=yqXZFxpELC7KVnFOS48ylbz2pIh7yKj8&expires=1788188399&allow_ip=&allow_referer=&signature=put6pL4PDxFGW%2BSpc%2BCXvbP%2BwSI%3D" alt="Loading" class="loader-gif" draggable="false" />
@@ -35,10 +35,8 @@
       </a>
       
       <nav class="nav-menu" id="navMenu">
-        <a href="#profile" class="nav-link spring-hover active">
-          <i class="fa-solid fa-user"></i>
-          <span>About Me</span>
-        </a>
+        <!-- 상단 메뉴 About Me (아이콘 없이 텍스트만 유지) -->
+        <a href="#profile" class="nav-link spring-hover active">About Me</a>
         <a href="#skills" class="nav-link spring-hover">Skills & Certs</a>
         <a href="#trainings" class="nav-link spring-hover">Education & Training</a>
         
@@ -111,7 +109,7 @@
     </div>
   </footer>
 
-  <!-- 스크롤 맨 위에서만 나타나는 다크/라이트 모드 전환 플로팅 버튼 -->
+  <!-- 스크롤 맨 위 전용 테마 변환 플로팅 버튼 -->
   <button id="themeToggleBtn" class="theme-toggle-btn spring-hover" aria-label="테마 전환" title="다크/라이트 모드 전환">
     <i class="fa-solid fa-moon" id="themeToggleIcon"></i>
   </button>
