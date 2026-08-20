@@ -26,7 +26,6 @@
   --font-main: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   --font-display: 'Outfit', var(--font-main);
   
-  /* 전역 스프링 물리 이징 */
   --spring-easing: cubic-bezier(0.34, 1.56, 0.64, 1);
   --spring-transition: all 0.45s var(--spring-easing);
 }
@@ -231,11 +230,6 @@ body.loading-locked {
   padding: 6px 0;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-}
-
-.nav-link i {
-  font-size: 0.88rem;
 }
 
 .nav-link:hover,
@@ -271,6 +265,7 @@ body.loading-locked {
   gap: 8px;
   padding: 8px 18px;
   border-radius: 100px;
+  transition: var(--spring-transition);
 }
 
 [data-theme="dark"] .nav-dropdown-btn {
@@ -284,11 +279,17 @@ body.loading-locked {
   border-color: var(--accent-indigo);
 }
 
+/* Career & Projects 섹션 활성화 시 네온 캡슐 하이라이트 */
 .nav-dropdown-btn.active {
-  color: var(--text-main);
-  background: rgba(99, 102, 241, 0.22);
-  border-color: var(--accent-indigo);
-  box-shadow: 0 0 22px rgba(99, 102, 241, 0.45);
+  color: var(--accent-indigo) !important;
+  background: rgba(99, 102, 241, 0.18) !important;
+  border-color: var(--accent-indigo) !important;
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.45) !important;
+}
+
+[data-theme="dark"] .nav-dropdown-btn.active {
+  color: #fff !important;
+  background: rgba(99, 102, 241, 0.28) !important;
 }
 
 .dropdown-arrow {
@@ -1203,7 +1204,6 @@ body.loading-locked {
               color 0.3s ease;
 }
 
-/* 스크롤이 맨 위에 있을 때만 활성화 */
 .theme-toggle-btn.visible {
   opacity: 1;
   visibility: visible;
