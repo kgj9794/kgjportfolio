@@ -113,6 +113,7 @@ function hideLoading() {
 
     initScrollSpringReveal();
     handleTopThemeButtonVisibility();
+    updateNavigationHighlight();
   }, 300);
 }
 
@@ -123,7 +124,6 @@ function handleTopThemeButtonVisibility() {
   const btn = document.getElementById("themeToggleBtn");
   if (!btn || isLoadingActive) return;
 
-  // 스크롤이 최상단(40px 이내)일 때만 표시
   if (window.scrollY <= 40) {
     btn.classList.add("visible");
   } else {
@@ -131,10 +131,52 @@ function handleTopThemeButtonVisibility() {
   }
 }
 
-window.addEventListener("scroll", handleTopThemeButtonVisibility, { passive: true });
+window.addEventListener("scroll", () => {
+  handleTopThemeButtonVisibility();
+  updateNavigationHighlight();
+}, { passive: true });
 
 // ========================================================
-// 5. 스크롤 좌우 교차 스프링 옵저버
+// 5. 상단 메뉴 하이라이트 제어 (Career & Projects 연동)
+// ========================================================
+function updateNavigationHighlight() {
+  const sections = document.querySelectorAll(".section");
+  const navLinks = document.querySelectorAll(".nav-link");
+  const navDropdownBtn = document.getElementById("navDropdownBtn");
+
+  const scrollY = window.scrollY + 120;
+  let activeSectionId = "profile";
+
+  sections.forEach(section => {
+    const top = section.offsetTop;
+    const height = section.offsetHeight;
+    const id = section.getAttribute("id");
+
+    if (scrollY >= top && scrollY < top + height) {
+      activeSectionId = id;
+    }
+  });
+
+  navLinks.forEach(link => {
+    const targetHref = link.getAttribute("href");
+    if (targetHref === `#${activeSectionId}`) {
+      link.classList.add("active");
+    } else {
+      link.classList.remove("active");
+    }
+  });
+
+  if (navDropdownBtn) {
+    if (activeSectionId === "experience") {
+      navDropdownBtn.classList.add("active");
+    } else {
+      navDropdownBtn.classList.remove("active");
+    }
+  }
+}
+
+// ========================================================
+// 6. 스크롤 좌우 교차 스프링 옵저버
 // ========================================================
 let scrollRevealObserver;
 
@@ -161,7 +203,7 @@ function initScrollSpringReveal() {
 }
 
 // ========================================================
-// 6. 동적 렌더링 함수들
+// 7. 동적 렌더링 함수들
 // ========================================================
 function renderProfile(profile) {
   const container = document.getElementById("profileContent");
@@ -462,7 +504,7 @@ function renderExperiencesWithProjects(experiences) {
 }
 
 // ========================================================
-// 7. API Fetch & 이벤트 바인딩
+// 8. API Fetch & 초기화
 // ========================================================
 async function fetchPortfolioData() {
   showLoading("포트폴리오 데이터를 불러오는 중...");
@@ -486,7 +528,7 @@ async function fetchPortfolioData() {
 document.addEventListener("DOMContentLoaded", () => {
   fetchPortfolioData();
 
-  // 테마 전환 버튼 클릭 이벤트
+  // 테마 전환 버튼 클릭
   const themeToggleBtn = document.getElementById("themeToggleBtn");
   if (themeToggleBtn) {
     themeToggleBtn.addEventListener("click", () => {
@@ -534,28 +576,4 @@ document.addEventListener("DOMContentLoaded", () => {
       if (navDropdown) navDropdown.classList.remove("open");
     });
   });
-
-  // 스크롤 감지 및 드롭다운 활성 바인딩
-  const sections = document.querySelectorAll(".section");
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const currentId = entry.target.getAttribute("id");
-
-        navLinks.forEach(link => {
-          link.classList.toggle("active", link.getAttribute("href") === `#${currentId}`);
-        });
-
-        if (navDropdownBtn) {
-          if (currentId === "experience") {
-            navDropdownBtn.classList.add("active");
-          } else {
-            navDropdownBtn.classList.remove("active");
-          }
-        }
-      }
-    });
-  }, { rootMargin: "-25% 0px -65% 0px", threshold: 0.1 });
-
-  sections.forEach(section => observer.observe(section));
 });
