@@ -1,6 +1,92 @@
 const GOOGLE_SCRIPT_API_URL = "https://script.google.com/macros/s/AKfycbxBLP_PnF0CfpNmud-9cmhadguTuJeaaederTAkY9eGvwB_q6pb_scjKHp2cdPNlRKd/exec";
 
+// ========================================================
+// 1. 로딩 중 스크롤/터치/드래그 완전 차단 핸들러
+// ========================================================
+let isLoadingActive = true;
+
+function preventDefaultScroll(e) {
+  if (isLoadingActive) {
+    e.preventDefault();
+    return false;
+  }
+}
+
+function preventScrollKeys(e) {
+  if (!isLoadingActive) return;
+  const keys = [32, 33, 34, 35, 36, 37, 38, 39, 40];
+  if (keys.includes(e.keyCode)) {
+    e.preventDefault();
+    return false;
+  }
+}
+
+window.addEventListener("wheel", preventDefaultScroll, { passive: false });
+window.addEventListener("touchmove", preventDefaultScroll, { passive: false });
+window.addEventListener("keydown", preventScrollKeys, false);
+
+window.addEventListener("dragstart", (e) => {
+  if (isLoadingActive || e.target.tagName === "IMG") {
+    e.preventDefault();
+    return false;
+  }
+}, { passive: false });
+
+window.addEventListener("selectstart", (e) => {
+  if (isLoadingActive) {
+    e.preventDefault();
+    return false;
+  }
+}, { passive: false });
+
+// ========================================================
+// 2. 시간 기반 자동 다크모드 및 수동 전환 관리
+// ========================================================
+function initThemeMode() {
+  const currentHour = new Date().getHours();
+  const isNight = currentHour >= 18 || currentHour < 6;
+  const savedPref = localStorage.getItem("user_theme_pref");
+
+  if (savedPref) {
+    if (savedPref === "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+    }
+  } else {
+    if (isNight) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+    }
+  }
+
+  updateToggleIcon();
+}
+
+function updateToggleIcon() {
+  const icon = document.getElementById("themeToggleIcon");
+  if (!icon) return;
+
+  const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+  if (isDark) {
+    icon.className = "fa-solid fa-sun";
+  } else {
+    icon.className = "fa-solid fa-moon";
+  }
+}
+
+initThemeMode();
+
+// ========================================================
+// 3. 로딩 화면 & 부드러운 페이드 전환 (스크롤 해제)
+// ========================================================
 function showLoading(text = "데이터를 불러오는 중...") {
+  isLoadingActive = true;
+  document.documentElement.classList.add("loading-locked");
+  document.body.classList.add("loading-locked");
+  window.scrollTo(0, 0);
+
   const loader = document.getElementById("globalLoader");
   const loaderText = document.getElementById("loaderText");
   if (loaderText) loaderText.innerText = text;
@@ -9,10 +95,74 @@ function showLoading(text = "데이터를 불러오는 중...") {
 
 function hideLoading() {
   const loader = document.getElementById("globalLoader");
-  if (loader) loader.classList.remove("show");
+  const mainContainer = document.getElementById("mainContainer");
+  
+  if (loader) {
+    loader.classList.remove("show");
+  }
+
+  setTimeout(() => {
+    isLoadingActive = false;
+    document.documentElement.classList.remove("loading-locked");
+    document.body.classList.remove("loading-locked");
+    window.scrollTo(0, 0);
+
+    if (mainContainer) {
+      mainContainer.classList.add("loaded");
+    }
+
+    initScrollSpringReveal();
+    handleTopThemeButtonVisibility();
+  }, 300);
 }
 
-// 1. 프로필 렌더링
+// ========================================================
+// 4. 스크롤 위치 감지: 맨 위 상태에서만 버튼 노출
+// ========================================================
+function handleTopThemeButtonVisibility() {
+  const btn = document.getElementById("themeToggleBtn");
+  if (!btn || isLoadingActive) return;
+
+  // 스크롤이 최상단(40px 이내)일 때만 표시
+  if (window.scrollY <= 40) {
+    btn.classList.add("visible");
+  } else {
+    btn.classList.remove("visible");
+  }
+}
+
+window.addEventListener("scroll", handleTopThemeButtonVisibility, { passive: true });
+
+// ========================================================
+// 5. 스크롤 좌우 교차 스프링 옵저버
+// ========================================================
+let scrollRevealObserver;
+
+function initScrollSpringReveal() {
+  if (scrollRevealObserver) {
+    scrollRevealObserver.disconnect();
+  }
+
+  const revealElements = document.querySelectorAll(".reveal-spring-left, .reveal-spring-right");
+  
+  scrollRevealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("revealed");
+      }
+    });
+  }, {
+    root: null,
+    threshold: 0.1,
+    rootMargin: "0px 0px -40px 0px"
+  });
+
+  revealElements.forEach(el => scrollRevealObserver.observe(el));
+}
+
+// ========================================================
+// 6. 동적 렌더링 함수들
+// ========================================================
 function renderProfile(profile) {
   const container = document.getElementById("profileContent");
   if (!profile || !container) return;
@@ -20,13 +170,13 @@ function renderProfile(profile) {
   const defaultImg = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop";
 
   container.innerHTML = `
-    <div class="profile-img-wrap">
-      <img src="${profile.profile_image || defaultImg}" alt="${profile.name || '프로필'}">
+    <div class="profile-img-wrap spring-hover">
+      <img src="${profile.profile_image || defaultImg}" alt="${profile.name || '프로필'}" draggable="false">
     </div>
     <div class="profile-info">
       <div class="profile-header-row">
         <h1 class="profile-name">${profile.name || '이름 미입력'}</h1>
-        <div class="status-badge">
+        <div class="status-badge spring-hover">
           <span class="status-dot"></span>
           <span>Open for Work</span>
         </div>
@@ -34,27 +184,27 @@ function renderProfile(profile) {
       <p class="profile-bio">${profile.bio || '사용자 경험과 엔지니어링의 완벽한 조화를 추구하는 개발자입니다.'}</p>
       
       <div class="info-grid">
-        <div class="info-item">
+        <div class="info-item spring-hover">
           <div class="info-icon"><i class="fa-solid fa-venus-mars"></i></div>
           <span class="info-label">성별</span>
           <span class="info-value">${profile.gender || '-'}</span>
         </div>
-        <div class="info-item">
+        <div class="info-item spring-hover">
           <div class="info-icon"><i class="fa-solid fa-droplet"></i></div>
           <span class="info-label">혈액형</span>
           <span class="info-value">${profile.blood_type || '-'}</span>
         </div>
-        <div class="info-item">
+        <div class="info-item spring-hover">
           <div class="info-icon"><i class="fa-solid fa-graduation-cap"></i></div>
           <span class="info-label">학력</span>
           <span class="info-value">${profile.education || '-'}</span>
         </div>
-        <div class="info-item">
+        <div class="info-item spring-hover">
           <div class="info-icon"><i class="fa-solid fa-location-dot"></i></div>
           <span class="info-label">거주지</span>
           <span class="info-value">${profile.residence || '-'}</span>
         </div>
-        <div class="info-item" style="grid-column: 1 / -1;">
+        <div class="info-item spring-hover" style="grid-column: 1 / -1;">
           <div class="info-icon"><i class="fa-solid fa-heart"></i></div>
           <span class="info-label">취미 및 관심사</span>
           <span class="info-value">${profile.hobby || '-'}</span>
@@ -64,7 +214,6 @@ function renderProfile(profile) {
   `;
 }
 
-// 2. 스킬 & 자격증 렌더링
 function renderSkills(skills) {
   const container = document.getElementById("skillsContent");
   if (!container) return;
@@ -97,6 +246,8 @@ function renderSkills(skills) {
     'Etc': 'fa-solid fa-circle-nodes'
   };
 
+  let globalSkillIndex = 0;
+
   container.innerHTML = Object.keys(grouped).map(cat => {
     const items = grouped[cat];
     const displayTitle = categoryTitles[cat] || cat;
@@ -105,7 +256,7 @@ function renderSkills(skills) {
 
     return `
       <div class="skill-category-block">
-        <h3 class="skill-category-title">
+        <h3 class="skill-category-title reveal-spring-left">
           <i class="${catIcon}"></i> ${displayTitle} (${items.length})
         </h3>
         <div class="skills-grid">
@@ -115,8 +266,10 @@ function renderSkills(skills) {
               ? `<img src="${item.icon}" alt="${item.name}">` 
               : `<i class="${item.icon || (isCert ? 'fa-solid fa-award' : 'fa-solid fa-code')}"></i>`;
 
+            const motionDirection = (globalSkillIndex++ % 2 === 0) ? 'reveal-spring-left' : 'reveal-spring-right';
+
             return `
-              <div class="skill-card ${isCert ? 'cert-card' : ''}">
+              <div class="skill-card spring-hover ${isCert ? 'cert-card' : ''} ${motionDirection}">
                 <div class="skill-icon-box">
                   ${iconHTML}
                 </div>
@@ -136,7 +289,6 @@ function renderSkills(skills) {
   }).join('');
 }
 
-// 3. 이수 교육 자료 렌더링
 function renderTrainings(trainings) {
   const container = document.getElementById("trainingContent");
   if (!container) return;
@@ -146,25 +298,26 @@ function renderTrainings(trainings) {
     return;
   }
 
-  container.innerHTML = trainings.map(t => {
+  container.innerHTML = trainings.map((t, idx) => {
     const title = t.title || '교육 과정명 미입력';
     const inst = t.institution || '교육 기관 미입력';
     const period = t.period || '-';
     const badge = t.badge_text || '수료';
     const desc = t.description || '';
     const fileUrl = t.file_url || '';
+    const motionDirection = (idx % 2 === 0) ? 'reveal-spring-left' : 'reveal-spring-right';
 
     return `
-      <div class="training-card">
+      <div class="training-card spring-hover ${motionDirection}">
         <div class="training-top-row">
-          <span class="training-inst-badge"><i class="fa-solid fa-building-columns"></i> ${inst}</span>
-          ${badge ? `<span class="training-status-tag">${badge}</span>` : ''}
+          <span class="training-inst-badge spring-hover"><i class="fa-solid fa-building-columns"></i> ${inst}</span>
+          ${badge ? `<span class="training-status-tag spring-hover">${badge}</span>` : ''}
         </div>
         <h3 class="training-title">${title}</h3>
         <div class="training-period"><i class="fa-regular fa-calendar-check"></i> ${period}</div>
         <p class="training-desc">${desc}</p>
         ${fileUrl ? `
-          <a href="${fileUrl}" target="_blank" rel="noopener noreferrer" class="training-btn">
+          <a href="${fileUrl}" target="_blank" rel="noopener noreferrer" class="training-btn spring-hover">
             <i class="fa-solid fa-file-arrow-down"></i> 수료증 / 이수 자료 확인
           </a>
         ` : ''}
@@ -173,7 +326,6 @@ function renderTrainings(trainings) {
   }).join("");
 }
 
-// 4. 상단 메뉴 드롭다운 렌더링
 function renderNavDropdown(experiences) {
   const dropdownMenu = document.getElementById("dropdownMenu");
   if (!dropdownMenu) return;
@@ -191,8 +343,8 @@ function renderNavDropdown(experiences) {
 
     return `
       <div class="dropdown-group">
-        <a href="#${compId}" class="dropdown-company-link nav-target-link">
-          ${compLogo ? `<img src="${compLogo}" alt="logo" style="width:16px;height:16px;object-fit:contain;border-radius:3px;">` : `<i class="fa-solid fa-building"></i>`}
+        <a href="#${compId}" class="dropdown-company-link nav-target-link spring-hover">
+          ${compLogo ? `<img src="${compLogo}" alt="logo" style="width:16px;height:16px;object-fit:contain;border-radius:3px;" draggable="false">` : `<i class="fa-solid fa-building"></i>`}
           <span>${compName}</span>
         </a>
         ${projects.length > 0 ? `
@@ -201,7 +353,7 @@ function renderNavDropdown(experiences) {
               const projName = proj.project_name || `프로젝트 #${proj.id}`;
               const projId = `project-${proj.id}`;
               return `
-                <a href="#${projId}" class="dropdown-project-link nav-target-link">
+                <a href="#${projId}" class="dropdown-project-link nav-target-link spring-hover">
                   <i class="fa-solid fa-arrow-turn-down-right"></i>
                   <span>${projName}</span>
                 </a>
@@ -223,7 +375,6 @@ function renderNavDropdown(experiences) {
   });
 }
 
-// 5. 회사 및 프로젝트 렌더링
 function renderExperiencesWithProjects(experiences) {
   const container = document.getElementById("experienceContent");
   if (!container) return;
@@ -236,7 +387,7 @@ function renderExperiencesWithProjects(experiences) {
   const defaultCompImg = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&auto=format&fit=crop";
   const defaultProjImg = "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&auto=format&fit=crop";
 
-  container.innerHTML = experiences.map(exp => {
+  container.innerHTML = experiences.map((exp, compIdx) => {
     const compName = exp.company_name || '회사명 미입력';
     const compLogo = exp.logo_url || '';
     const compPeriod = exp.period || '-';
@@ -245,20 +396,21 @@ function renderExperiencesWithProjects(experiences) {
     const compImg = exp.image_url || defaultCompImg;
     const projects = exp.projects || [];
     const compElementId = `company-${exp.id}`;
+    const compMotionDirection = (compIdx % 2 === 0) ? 'reveal-spring-left' : 'reveal-spring-right';
 
     return `
-      <div class="company-block" id="${compElementId}">
+      <div class="company-block spring-hover ${compMotionDirection}" id="${compElementId}">
         <div class="company-header-card">
-          <div class="comp-img-wrap">
-            <img src="${compImg}" alt="${compName}">
+          <div class="comp-img-wrap spring-hover">
+            <img src="${compImg}" alt="${compName}" draggable="false">
           </div>
           <div class="comp-info">
             <div class="comp-title-row">
               <div class="comp-title-left">
-                ${compLogo ? `<img src="${compLogo}" alt="${compName} 로고" class="comp-logo-img">` : ''}
+                ${compLogo ? `<img src="${compLogo}" alt="${compName} 로고" class="comp-logo-img spring-hover" draggable="false">` : ''}
                 <h3 class="comp-name">${compName}</h3>
               </div>
-              <span class="comp-period"><i class="fa-regular fa-calendar"></i> ${compPeriod}</span>
+              <span class="comp-period spring-hover"><i class="fa-regular fa-calendar"></i> ${compPeriod}</span>
             </div>
             <div class="comp-role"><i class="fa-solid fa-id-badge"></i> ${compRole}</div>
             <p class="comp-desc">${compDesc}</p>
@@ -272,25 +424,26 @@ function renderExperiencesWithProjects(experiences) {
           
           ${projects.length > 0 ? `
             <div class="project-grid">
-              ${projects.map(proj => {
+              ${projects.map((proj, projIdx) => {
                 const projName = proj.project_name || '프로젝트명 미입력';
                 const projPeriod = proj.period || '-';
                 const projDesc = proj.description || '';
                 const projImg = proj.image_url || defaultProjImg;
                 const refLink = proj.ref_link || '';
                 const projElementId = `project-${proj.id}`;
+                const projMotionDirection = (projIdx % 2 === 0) ? 'reveal-spring-left' : 'reveal-spring-right';
 
                 return `
-                  <div class="project-card" id="${projElementId}">
+                  <div class="project-card spring-hover ${projMotionDirection}" id="${projElementId}">
                     <div class="project-img-wrap">
-                      <img src="${projImg}" alt="${projName}">
+                      <img src="${projImg}" alt="${projName}" draggable="false">
                     </div>
                     <div class="project-body">
                       <span class="project-period"><i class="fa-regular fa-clock"></i> ${projPeriod}</span>
                       <h4 class="project-name">${projName}</h4>
                       <p class="project-desc">${projDesc}</p>
                       ${refLink ? `
-                        <a href="${refLink}" target="_blank" rel="noopener noreferrer" class="project-btn">
+                        <a href="${refLink}" target="_blank" rel="noopener noreferrer" class="project-btn spring-hover">
                           <i class="fa-solid fa-arrow-up-right-from-square"></i> 참고 자료 / 배포 링크
                         </a>
                       ` : ''}
@@ -308,7 +461,9 @@ function renderExperiencesWithProjects(experiences) {
   }).join("");
 }
 
-// 6. Fetch API
+// ========================================================
+// 7. API Fetch & 이벤트 바인딩
+// ========================================================
 async function fetchPortfolioData() {
   showLoading("포트폴리오 데이터를 불러오는 중...");
   try {
@@ -328,9 +483,24 @@ async function fetchPortfolioData() {
   }
 }
 
-// 7. 이벤트 리스너
 document.addEventListener("DOMContentLoaded", () => {
   fetchPortfolioData();
+
+  // 테마 전환 버튼 클릭 이벤트
+  const themeToggleBtn = document.getElementById("themeToggleBtn");
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener("click", () => {
+      const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+      if (isDark) {
+        document.documentElement.removeAttribute("data-theme");
+        localStorage.setItem("user_theme_pref", "light");
+      } else {
+        document.documentElement.setAttribute("data-theme", "dark");
+        localStorage.setItem("user_theme_pref", "dark");
+      }
+      updateToggleIcon();
+    });
+  }
 
   const hamburger = document.getElementById("hamburger");
   const navMenu = document.getElementById("navMenu");
@@ -343,6 +513,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // 상단 메뉴 '촤라락' 토글
   if (navDropdownBtn && navDropdown) {
     navDropdownBtn.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -364,17 +535,27 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  // 스크롤 감지 및 드롭다운 활성 바인딩
   const sections = document.querySelectorAll(".section");
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        const id = entry.target.getAttribute("id");
+        const currentId = entry.target.getAttribute("id");
+
         navLinks.forEach(link => {
-          link.classList.toggle("active", link.getAttribute("href") === `#${id}`);
+          link.classList.toggle("active", link.getAttribute("href") === `#${currentId}`);
         });
+
+        if (navDropdownBtn) {
+          if (currentId === "experience") {
+            navDropdownBtn.classList.add("active");
+          } else {
+            navDropdownBtn.classList.remove("active");
+          }
+        }
       }
     });
-  }, { rootMargin: "-20% 0px -70% 0px" });
+  }, { rootMargin: "-25% 0px -65% 0px", threshold: 0.1 });
 
   sections.forEach(section => observer.observe(section));
 });
