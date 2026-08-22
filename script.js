@@ -1,7 +1,7 @@
 const GOOGLE_SCRIPT_API_URL = "https://script.google.com/macros/s/AKfycbxBLP_PnF0CfpNmud-9cmhadguTuJeaaederTAkY9eGvwB_q6pb_scjKHp2cdPNlRKd/exec";
 
 // ========================================================
-// 1. 로딩 중 스크롤/터치/드래그 완전 차단 핸들러
+// 1. 로딩 중 스크롤/터치/드래그 제어
 // ========================================================
 let isLoadingActive = true;
 
@@ -40,7 +40,7 @@ window.addEventListener("selectstart", (e) => {
 }, { passive: false });
 
 // ========================================================
-// 2. 시간 기반 자동 다크모드 및 수동 전환 관리
+// 2. 시간 기반 자동 다크모드 및 수동 전환
 // ========================================================
 function initThemeMode() {
   const currentHour = new Date().getHours();
@@ -79,7 +79,7 @@ function updateToggleIcon() {
 initThemeMode();
 
 // ========================================================
-// 3. 로딩 화면 & 부드러운 페이드 전환 (스크롤 해제)
+// 3. 로딩 화면 & 페이드 전환
 // ========================================================
 function showLoading(text = "데이터를 불러오는 중...") {
   isLoadingActive = true;
@@ -113,12 +113,11 @@ function hideLoading() {
 
     initScrollSpringReveal();
     handleTopThemeButtonVisibility();
-    updateNavigationHighlight();
   }, 300);
 }
 
 // ========================================================
-// 4. 스크롤 위치 감지: 맨 위 상태에서만 버튼 노출
+// 4. 스크롤 최상단 테마 버튼 가시성
 // ========================================================
 function handleTopThemeButtonVisibility() {
   const btn = document.getElementById("themeToggleBtn");
@@ -131,52 +130,10 @@ function handleTopThemeButtonVisibility() {
   }
 }
 
-window.addEventListener("scroll", () => {
-  handleTopThemeButtonVisibility();
-  updateNavigationHighlight();
-}, { passive: true });
+window.addEventListener("scroll", handleTopThemeButtonVisibility, { passive: true });
 
 // ========================================================
-// 5. 상단 메뉴 하이라이트 제어 (Career & Projects 연동)
-// ========================================================
-function updateNavigationHighlight() {
-  const sections = document.querySelectorAll(".section");
-  const navLinks = document.querySelectorAll(".nav-link");
-  const navDropdownBtn = document.getElementById("navDropdownBtn");
-
-  const scrollY = window.scrollY + 120;
-  let activeSectionId = "profile";
-
-  sections.forEach(section => {
-    const top = section.offsetTop;
-    const height = section.offsetHeight;
-    const id = section.getAttribute("id");
-
-    if (scrollY >= top && scrollY < top + height) {
-      activeSectionId = id;
-    }
-  });
-
-  navLinks.forEach(link => {
-    const targetHref = link.getAttribute("href");
-    if (targetHref === `#${activeSectionId}`) {
-      link.classList.add("active");
-    } else {
-      link.classList.remove("active");
-    }
-  });
-
-  if (navDropdownBtn) {
-    if (activeSectionId === "experience") {
-      navDropdownBtn.classList.add("active");
-    } else {
-      navDropdownBtn.classList.remove("active");
-    }
-  }
-}
-
-// ========================================================
-// 6. 스크롤 좌우 교차 스프링 옵저버
+// 5. 스크롤 슬라이드 옵저버
 // ========================================================
 let scrollRevealObserver;
 
@@ -195,15 +152,15 @@ function initScrollSpringReveal() {
     });
   }, {
     root: null,
-    threshold: 0.1,
-    rootMargin: "0px 0px -40px 0px"
+    threshold: 0.08,
+    rootMargin: "0px 0px -30px 0px"
   });
 
   revealElements.forEach(el => scrollRevealObserver.observe(el));
 }
 
 // ========================================================
-// 7. 동적 렌더링 함수들
+// 6. 데이터 렌더링 함수들
 // ========================================================
 function renderProfile(profile) {
   const container = document.getElementById("profileContent");
@@ -352,8 +309,8 @@ function renderTrainings(trainings) {
     return `
       <div class="training-card spring-hover ${motionDirection}">
         <div class="training-top-row">
-          <span class="training-inst-badge spring-hover"><i class="fa-solid fa-building-columns"></i> ${inst}</span>
-          ${badge ? `<span class="training-status-tag spring-hover">${badge}</span>` : ''}
+          <span class="training-inst-badge"><i class="fa-solid fa-building-columns"></i> ${inst}</span>
+          ${badge ? `<span class="training-status-tag">${badge}</span>` : ''}
         </div>
         <h3 class="training-title">${title}</h3>
         <div class="training-period"><i class="fa-regular fa-calendar-check"></i> ${period}</div>
@@ -386,7 +343,7 @@ function renderNavDropdown(experiences) {
     return `
       <div class="dropdown-group">
         <a href="#${compId}" class="dropdown-company-link nav-target-link spring-hover">
-          ${compLogo ? `<img src="${compLogo}" alt="logo" style="width:16px;height:16px;object-fit:contain;border-radius:3px;" draggable="false">` : `<i class="fa-solid fa-building"></i>`}
+          ${compLogo ? `<img src="${compLogo}" alt="logo" style="width:15px;height:15px;object-fit:contain;border-radius:3px;" draggable="false">` : `<i class="fa-solid fa-building"></i>`}
           <span>${compName}</span>
         </a>
         ${projects.length > 0 ? `
@@ -407,13 +364,10 @@ function renderNavDropdown(experiences) {
     `;
   }).join("");
 
+  // 메뉴 클릭 시 모바일 드로어 닫기
   const targetLinks = dropdownMenu.querySelectorAll(".nav-target-link");
   targetLinks.forEach(link => {
-    link.addEventListener("click", () => {
-      document.getElementById("navDropdown").classList.remove("open");
-      const navMenu = document.getElementById("navMenu");
-      if (navMenu) navMenu.classList.remove("open");
-    });
+    link.addEventListener("click", closeMobileMenu);
   });
 }
 
@@ -504,7 +458,24 @@ function renderExperiencesWithProjects(experiences) {
 }
 
 // ========================================================
-// 8. API Fetch & 초기화
+// 7. 모바일 메뉴 컨트롤
+// ========================================================
+function closeMobileMenu() {
+  const navMenu = document.getElementById("navMenu");
+  const navDropdown = document.getElementById("navDropdown");
+  const navOverlay = document.getElementById("navOverlay");
+  const hamburgerIcon = document.getElementById("hamburgerIcon");
+
+  if (navMenu) navMenu.classList.remove("open");
+  if (navDropdown) navDropdown.classList.remove("open");
+  if (navOverlay) navOverlay.classList.remove("active");
+  if (hamburgerIcon) {
+    hamburgerIcon.className = "fa-solid fa-bars-staggered";
+  }
+}
+
+// ========================================================
+// 8. Fetch & 이벤트 초기화
 // ========================================================
 async function fetchPortfolioData() {
   showLoading("포트폴리오 데이터를 불러오는 중...");
@@ -528,7 +499,7 @@ async function fetchPortfolioData() {
 document.addEventListener("DOMContentLoaded", () => {
   fetchPortfolioData();
 
-  // 테마 전환 버튼 클릭
+  // 테마 토글 버튼
   const themeToggleBtn = document.getElementById("themeToggleBtn");
   if (themeToggleBtn) {
     themeToggleBtn.addEventListener("click", () => {
@@ -544,18 +515,29 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // 모바일 햄버거 토글
   const hamburger = document.getElementById("hamburger");
   const navMenu = document.getElementById("navMenu");
+  const navOverlay = document.getElementById("navOverlay");
+  const hamburgerIcon = document.getElementById("hamburgerIcon");
   const navDropdown = document.getElementById("navDropdown");
   const navDropdownBtn = document.getElementById("navDropdownBtn");
 
   if (hamburger && navMenu) {
     hamburger.addEventListener("click", () => {
-      navMenu.classList.toggle("open");
+      const isOpen = navMenu.classList.toggle("open");
+      if (navOverlay) navOverlay.classList.toggle("active", isOpen);
+      if (hamburgerIcon) {
+        hamburgerIcon.className = isOpen ? "fa-solid fa-xmark" : "fa-solid fa-bars-staggered";
+      }
     });
   }
 
-  // 상단 메뉴 '촤라락' 토글
+  if (navOverlay) {
+    navOverlay.addEventListener("click", closeMobileMenu);
+  }
+
+  // 상단 Career & Projects 드롭다운
   if (navDropdownBtn && navDropdown) {
     navDropdownBtn.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -569,11 +551,29 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // 일반 네비 링크 클릭 시 모바일 메뉴 닫기
   const navLinks = document.querySelectorAll(".nav-link");
   navLinks.forEach(link => {
-    link.addEventListener("click", () => {
-      if (navMenu) navMenu.classList.remove("open");
-      if (navDropdown) navDropdown.classList.remove("open");
-    });
+    link.addEventListener("click", closeMobileMenu);
   });
+
+  // 스크롤 감지 메뉴 하이라이트
+  const sections = document.querySelectorAll(".section");
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const currentId = entry.target.getAttribute("id");
+
+        navLinks.forEach(link => {
+          link.classList.toggle("active", link.getAttribute("href") === `#${currentId}`);
+        });
+
+        if (navDropdownBtn) {
+          navDropdownBtn.classList.toggle("active", currentId === "experience");
+        }
+      }
+    });
+  }, { rootMargin: "-25% 0px -65% 0px", threshold: 0.08 });
+
+  sections.forEach(section => observer.observe(section));
 });
