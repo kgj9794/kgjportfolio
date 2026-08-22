@@ -364,7 +364,6 @@ function renderNavDropdown(experiences) {
     `;
   }).join("");
 
-  // 메뉴 클릭 시 모바일 드로어 닫기
   const targetLinks = dropdownMenu.querySelectorAll(".nav-target-link");
   targetLinks.forEach(link => {
     link.addEventListener("click", closeMobileMenu);
@@ -499,7 +498,6 @@ async function fetchPortfolioData() {
 document.addEventListener("DOMContentLoaded", () => {
   fetchPortfolioData();
 
-  // 테마 토글 버튼
   const themeToggleBtn = document.getElementById("themeToggleBtn");
   if (themeToggleBtn) {
     themeToggleBtn.addEventListener("click", () => {
@@ -515,7 +513,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 모바일 햄버거 토글
   const hamburger = document.getElementById("hamburger");
   const navMenu = document.getElementById("navMenu");
   const navOverlay = document.getElementById("navOverlay");
@@ -537,7 +534,6 @@ document.addEventListener("DOMContentLoaded", () => {
     navOverlay.addEventListener("click", closeMobileMenu);
   }
 
-  // 상단 Career & Projects 드롭다운
   if (navDropdownBtn && navDropdown) {
     navDropdownBtn.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -551,13 +547,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 일반 네비 링크 클릭 시 모바일 메뉴 닫기
   const navLinks = document.querySelectorAll(".nav-link");
   navLinks.forEach(link => {
     link.addEventListener("click", closeMobileMenu);
   });
 
-  // 스크롤 감지 메뉴 하이라이트
   const sections = document.querySelectorAll(".section");
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
