@@ -2,7 +2,7 @@
 <html lang="ko" class="loading-locked">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Developer Portfolio</title>
   <!-- Google Fonts & Font Awesome -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,6 +26,9 @@
     </div>
   </div>
 
+  <!-- 모바일 메뉴 배경 딤 오버레이 -->
+  <div class="nav-overlay" id="navOverlay"></div>
+
   <!-- 상단 네비게이션 헤더 -->
   <header class="navbar">
     <div class="nav-container">
@@ -35,10 +38,18 @@
       </a>
       
       <nav class="nav-menu" id="navMenu">
-        <!-- 상단 메뉴 About Me (아이콘 없이 텍스트만 유지) -->
-        <a href="#profile" class="nav-link spring-hover active">About Me</a>
-        <a href="#skills" class="nav-link spring-hover">Skills & Certs</a>
-        <a href="#trainings" class="nav-link spring-hover">Education & Training</a>
+        <a href="#profile" class="nav-link spring-hover active">
+          <i class="fa-solid fa-user"></i>
+          <span>About Me</span>
+        </a>
+        <a href="#skills" class="nav-link spring-hover">
+          <i class="fa-solid fa-code-branch"></i>
+          <span>Skills & Certs</span>
+        </a>
+        <a href="#trainings" class="nav-link spring-hover">
+          <i class="fa-solid fa-graduation-cap"></i>
+          <span>Education & Training</span>
+        </a>
         
         <!-- 회사 및 프로젝트 계층 드롭다운 -->
         <div class="nav-dropdown" id="navDropdown">
@@ -54,14 +65,14 @@
       </nav>
 
       <button class="hamburger spring-hover" id="hamburger" aria-label="메뉴 열기">
-        <i class="fa-solid fa-bars-staggered"></i>
+        <i class="fa-solid fa-bars-staggered" id="hamburgerIcon"></i>
       </button>
     </div>
   </header>
 
   <main class="main-container" id="mainContainer">
     
-    <!-- 섹션 1: About Me (자기소개) -->
+    <!-- 섹션 1: About Me -->
     <section id="profile" class="section">
       <div class="section-badge reveal-spring-left">
         <i class="fa-solid fa-user"></i>
@@ -74,16 +85,22 @@
 
     <!-- 섹션 2: Skills & Certificates -->
     <section id="skills" class="section">
-      <div class="section-badge reveal-spring-left"><i class="fa-solid fa-code-branch"></i> TECH & CREDENTIALS</div>
+      <div class="section-badge reveal-spring-left">
+        <i class="fa-solid fa-code-branch"></i>
+        <span>TECH & CREDENTIALS</span>
+      </div>
       <h2 class="section-title reveal-spring-left">기술 스택 및 자격증</h2>
-      <p class="section-desc reveal-spring-left">실무에서 능숙하게 활용하는 프로그래밍 언어, 프레임워크, 도구 및 자격증 목록입니다.</p>
+      <p class="section-desc reveal-spring-left">실무에서 능숙하게 활용하는 기술 스택 및 자격증 목록입니다.</p>
       
       <div class="skills-wrapper" id="skillsContent"></div>
     </section>
 
     <!-- 섹션 3: Education & Training -->
     <section id="trainings" class="section">
-      <div class="section-badge reveal-spring-left"><i class="fa-solid fa-graduation-cap"></i> EDUCATION & TRAINING</div>
+      <div class="section-badge reveal-spring-left">
+        <i class="fa-solid fa-graduation-cap"></i>
+        <span>EDUCATION & TRAINING</span>
+      </div>
       <h2 class="section-title reveal-spring-left">이수 교육 자료</h2>
       <p class="section-desc reveal-spring-left">직무 역량 강화를 위해 수료한 전문 교육 과정 및 부트캠프 이력입니다.</p>
       
@@ -92,7 +109,10 @@
 
     <!-- 섹션 4: Career & Projects -->
     <section id="experience" class="section">
-      <div class="section-badge reveal-spring-left"><i class="fa-solid fa-cube"></i> CAREER & PROJECTS</div>
+      <div class="section-badge reveal-spring-left">
+        <i class="fa-solid fa-cube"></i>
+        <span>CAREER & PROJECTS</span>
+      </div>
       <h2 class="section-title reveal-spring-left">회사 이력 및 수행 프로젝트</h2>
       <p class="section-desc reveal-spring-left">재직한 기업 정보와 실무에서 구축한 프로덕트 및 프로젝트 목록입니다.</p>
       
@@ -109,7 +129,7 @@
     </div>
   </footer>
 
-  <!-- 스크롤 맨 위 전용 테마 변환 플로팅 버튼 -->
+  <!-- 최상단 전용 테마 변환 플로팅 버튼 -->
   <button id="themeToggleBtn" class="theme-toggle-btn spring-hover" aria-label="테마 전환" title="다크/라이트 모드 전환">
     <i class="fa-solid fa-moon" id="themeToggleIcon"></i>
   </button>
